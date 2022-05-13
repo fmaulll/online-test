@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import AddList from "./AddList";
 import CheckList from "./CheckList";
 
 const Login = () => {
@@ -59,6 +60,7 @@ const Login = () => {
       .then((res) => res.json())
       .then((data) => {
         setChecklist(data.data);
+        console.log(checklist);
         setLoading(false);
       });
   };
@@ -95,11 +97,12 @@ const Login = () => {
         <button onClick={formHandler}>login</button>
         <Link to="/">Dont have an account?</Link>
       </div>
+      <AddList token={token} />
       {loading ? (
         ""
       ) : (
-        <CheckList checklist={checklist} />
-        
+        // <CheckList checklist={checklist} />
+        ''
       )}
     </div>
   );
