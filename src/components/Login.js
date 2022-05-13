@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import AddList from "./AddList";
 import CheckList from "./CheckList";
+import styled from "styled-components";
 
 const Login = () => {
-  const [userInfo, setUserInfo] = useState();
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [token, setToken] = useState("");
   const [checklist, setChecklist] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [show, setShow] = useState(false);
 
   //   const fetchRegisterApi = async () => {
   //     const response = await fetch("94.74.86.174:8080/api", {
@@ -24,15 +24,26 @@ const Login = () => {
   //     console.log(data);
   //   };
 
+  //   async function fetchLoginApi() {
+  //     const response =
+  //     fetch("http://94.74.86.174:8080/api/login", {
+  //       method: "POST",
+  //       body: JSON.stringify({
+  //         username: username,
+  //         password: password,
+  //       }),
+  //       headers: {
+  //         Accept: "application/json",
+  //         "Content-Type": "application/json",
+  //       },
+  //     })
 
-//   async function fetchLoginApi() {
+  //     const data = await response.json()
 
-//   }
-    //   .then((res) => res.json())
-    //   .then((data) => {
-    //     setToken(data.data.token);
-    //     console.log(token);
-    //   });
+  //     setToken(data.data.token)
+  //     setLoading(false)
+  //   }
+
   const fetchLoginApi = () => {
     fetch("http://94.74.86.174:8080/api/login", {
       method: "POST",
@@ -48,9 +59,21 @@ const Login = () => {
       .then((res) => res.json())
       .then((data) => {
         setToken(data.data.token);
+        setShow(true);
         console.log(token);
       });
   };
+
+  // async function fetchChecklistApi() {
+  //     const response = await
+  //     fetch("http://94.74.86.174:8080/api/checklist", {
+  //       method: "GET",
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     })
+  //     const data = await response.json()
+
+  //     setChecklist(data.data)
+  // }
 
   const fetchChecklistApi = () => {
     fetch("http://94.74.86.174:8080/api/checklist", {
@@ -61,7 +84,6 @@ const Login = () => {
       .then((data) => {
         setChecklist(data.data);
         console.log(checklist);
-        setLoading(false);
       });
   };
 
@@ -75,37 +97,62 @@ const Login = () => {
   };
 
   const formHandler = (e) => {
-    e.preventDefault()
-    setUserInfo({
-      password: password,
-      username: username,
-    });
+    e.preventDefault();
 
     fetchLoginApi();
+  };
+
+  const loadChecklist = () => {
     fetchChecklistApi();
   };
 
   return (
-    <div>
-      <div>
-        <input type="text" onChange={usernameHandler} placeholder="Username" />
-        <input
+    <>
+      <InputContainer>
+        <StyledInput
+          type="text"
+          onChange={usernameHandler}
+          placeholder="Username"
+        />
+        <StyledInput
           type="password"
           onChange={passwordHandler}
           placeholder="Password"
         />
-        <button onClick={formHandler}>login</button>
+        <StyledButton onClick={formHandler}>login</StyledButton>
         <Link to="/">Dont have an account?</Link>
-      </div>
-      <AddList token={token} />
-      {loading ? (
-        ""
-      ) : (
-        // <CheckList checklist={checklist} />
-        ''
-      )}
-    </div>
+      </InputContainer>
+
+      {!show ? "" : <AddList token={token} />}
+      {!show ? "" : <button onClick={loadChecklist}>Load checklist!</button>}
+
+      {checklist === null ? <div>no</div> : <CheckList checklist={checklist} />}
+    </>
   );
 };
 
 export default Login;
+const InputContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+`;
+
+const StyledInput = styled.input`
+  padding: 10px;
+  width: 50%;
+  margin: 10px 20px;
+`;
+
+const StyledButton = styled.div`
+  text-align: center;
+  background-color: aqua;
+  border-radius: 10px;
+  color: white;
+  cursor: pointer;
+  padding: 10px;
+  width: 50%;
+  margin: 10px 20px;
+`;
